@@ -1,5 +1,5 @@
-const properties = require("./json/properties.json");
-const users = require("./json/users.json");
+// const properties = require("./json/properties.json");
+// const users = require("./json/users.json");
 
 const { Pool } = require("pg");
 const pool = new Pool({
@@ -10,11 +10,6 @@ const pool = new Pool({
 });
 
 /// Users
-
-//  test_user info:
-// name: A A
-// email: a@a.com
-// pw: 123
 
 /**
  * Get a single user from the database given their email.
@@ -38,15 +33,6 @@ const getUserWithEmail = function (email) {
       console.error(err.message);
       return;
     });
-  //tristanjacobs@gmail.com
-  // let resolvedUser = null;
-  // for (const userId in users) {
-  //   const user = users[userId];
-  //   if (user && user.email.toLowerCase() === email.toLowerCase()) {
-  //     resolvedUser = user;
-  //   }
-  // }
-  // return Promise.resolve(resolvedUser);
 };
 
 /**
@@ -69,7 +55,6 @@ const getUserWithId = function (id) {
       console.error(err.message);
       return;
     })
-  // return Promise.resolve(users[id]);
 };
 
 /**
@@ -92,12 +77,6 @@ const addUser = function (user) {
       console.error(err.message);
       return;
     })
-
-  // console.log(user);
-  // const userId = Object.keys(users).length + 1;
-  // user.id = userId;
-  // users[userId] = user;
-  // return Promise.resolve(user);
 };
 
 /// Reservations
@@ -122,8 +101,6 @@ const getAllReservations = function (guest_id, limit = 10) {
     .then(result => {
       return result.rows;
     })
-
-  // return getAllProperties(null, 2);
 };
 
 /// Properties
@@ -191,10 +168,7 @@ const getAllProperties = function (options, limit = 10) {
   LIMIT $${queryParams.length};
   `;
 
-  // 5
-  console.log(queryString, queryParams);
-
-  // 6
+  // Submit query:
   return pool.query(queryString, queryParams)
     .then(res => res.rows)
     .catch(err => console.error(err));
@@ -228,18 +202,14 @@ const addProperty = function (property) {
   return pool.query(`
     INSERT INTO properties (title, description, number_of_bedrooms, number_of_bathrooms, 
         parking_spaces, cost_per_night, thumbnail_photo_url, cover_photo_url, 
-        street, country, city, province, post_code, active, owner_id)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        street, country, city, province, post_code, owner_id)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
     RETURNING *;`,
     [title, description, number_of_bedrooms, number_of_bathrooms,
       parking_spaces, cost_per_night, thumbnail_photo_url, cover_photo_url,
-      street, country, city, province, post_code, true, owner_id])
+      street, country, city, province, post_code, owner_id])
     .then(res => res.rows)
     .catch(err => console.error(err));
-  // const propertyId = Object.keys(properties).length + 1;
-  // property.id = propertyId;
-  // properties[propertyId] = property;
-  // return Promise.resolve(property);
 };
 
 module.exports = {
