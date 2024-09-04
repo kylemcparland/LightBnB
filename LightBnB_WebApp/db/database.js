@@ -21,8 +21,7 @@ const pool = new Pool({
  * @param {String} email The email of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithEmail = function(email) {
-
+const getUserWithEmail = function (email) {
   const lowerCaseEmail = email.toLocaleLowerCase();
 
   return pool.query(
@@ -55,7 +54,7 @@ const getUserWithEmail = function(email) {
  * @param {string} id The id of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithId = function(id) {
+const getUserWithId = function (id) {
   return pool.query(
     `SELECT * FROM users WHERE id = $1;`, [id])
     .then(result => {
@@ -79,7 +78,6 @@ const getUserWithId = function(id) {
  * @return {Promise<{}>} A promise to the user.
  */
 const addUser = function (user) {
-  
   const { name, email, password } = user;
   const lowerCaseEmail = email.toLowerCase();
 
@@ -88,7 +86,6 @@ const addUser = function (user) {
     VALUES ($1, $2, $3)
     RETURNING *;`, [name, lowerCaseEmail, password])
     .then(result => {
-      console.log(result.rows[0]);
       return result.rows[0];
     })
     .catch(err => {
@@ -111,7 +108,23 @@ const addUser = function (user) {
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function (guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+
+  return pool.query(`
+    SELECT reservations.id, properties.title, properties.cost_per_night, properties.number_of_bedrooms, properties.number_of_bathrooms, 
+           properties.parking_spaces, properties.thumbnail_photo_url, reservations.start_date, AVG(property_reviews.rating) AS average_rating
+    FROM reservations
+    JOIN properties ON reservations.property_id = properties.id
+    JOIN property_reviews ON property_reviews.property_id = properties.id
+    WHERE reservations.guest_id = $1
+    GROUP BY properties.id, reservations.id
+    ORDER BY reservations.start_date
+    LIMIT $2;`, [guest_id, limit])
+    .then(result => {
+      console.log(result.rows);
+      return result.rows;
+    })
+
+  // return getAllProperties(null, 2);
 };
 
 /// Properties
