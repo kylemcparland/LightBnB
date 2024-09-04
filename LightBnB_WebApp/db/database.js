@@ -135,11 +135,9 @@ const getAllReservations = function (guest_id, limit = 10) {
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function (options, limit = 10) {
-  // 1
-  console.log('Options = ', options);
   const queryParams = [];
 
-  // 2
+  // Initialize Query:
   let queryString = `
   SELECT properties.*, avg(property_reviews.rating) as average_rating
   FROM properties
@@ -149,7 +147,7 @@ const getAllProperties = function (options, limit = 10) {
 
   // Owner ID:
   if (options.owner_id) {
-    queryParams.push(`${options.owner_id}`)
+    queryParams.push(options.owner_id)
     queryString += `AND owner_id = $${queryParams.length} `
   }
 
@@ -164,7 +162,7 @@ const getAllProperties = function (options, limit = 10) {
   if (options.minimum_price_per_night) {
     const dollarsToCents = Number(options.minimum_price_per_night) * 100;
 
-    queryParams.push(`${dollarsToCents}`);
+    queryParams.push(dollarsToCents);
     queryString += `AND cost_per_night >= $${queryParams.length} `
   }
 
@@ -172,7 +170,7 @@ const getAllProperties = function (options, limit = 10) {
   if (options.maximum_price_per_night) {
     const dollarsToCents = Number(options.maximum_price_per_night) * 100;
 
-    queryParams.push(`${dollarsToCents}`);
+    queryParams.push(dollarsToCents);
     queryString += `AND cost_per_night < $${queryParams.length} `
   }
 
@@ -181,7 +179,7 @@ const getAllProperties = function (options, limit = 10) {
 
   // Min Rating:
   if (options.minimum_rating) {
-    queryParams.push(`${options.minimum_rating}`);
+    queryParams.push(options.minimum_rating);
     queryString += `HAVING avg(property_reviews.rating) >= $${queryParams.length} `
   }
 
@@ -208,10 +206,40 @@ const getAllProperties = function (options, limit = 10) {
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function (property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+  console.log(property);
+
+  const {
+    title,
+    description,
+    number_of_bedrooms,
+    number_of_bathrooms,
+    parking_spaces,
+    cost_per_night,
+    thumbnail_photo_url,
+    cover_photo_url,
+    street,
+    country,
+    city,
+    province,
+    post_code,
+    owner_id
+  } = property;
+
+  return pool.query(`
+    INSERT INTO properties (title, description, number_of_bedrooms, number_of_bathrooms, 
+        parking_spaces, cost_per_night, thumbnail_photo_url, cover_photo_url, 
+        street, country, city, province, post_code, active, owner_id)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+    RETURNING *;`,
+    [title, description, number_of_bedrooms, number_of_bathrooms,
+      parking_spaces, cost_per_night, thumbnail_photo_url, cover_photo_url,
+      street, country, city, province, post_code, true, owner_id])
+    .then(res => res.rows)
+    .catch(err => console.error(err));
+  // const propertyId = Object.keys(properties).length + 1;
+  // property.id = propertyId;
+  // properties[propertyId] = property;
+  // return Promise.resolve(property);
 };
 
 module.exports = {
