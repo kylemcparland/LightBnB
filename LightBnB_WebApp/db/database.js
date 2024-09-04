@@ -144,52 +144,40 @@ const getAllProperties = function (options, limit = 10) {
   SELECT properties.*, avg(property_reviews.rating) as average_rating
   FROM properties
   JOIN property_reviews ON properties.id = property_id
+  WHERE 1=1
   `;
 
   // Owner ID:
   if (options.owner_id) {
     queryParams.push(`${options.owner_id}`)
-    queryString += `WHERE owner_id = $${queryParams.length} GROUP BY properties.id`
-    return pool.query(queryString, queryParams).then((res) => res.rows);
+    queryString += `AND owner_id = $${queryParams.length} `
   }
 
   // City:
   if (options.city) {
     const searchCity = options.city.trim();
     queryParams.push(`%${searchCity}%`);
-    queryString += `WHERE city LIKE $${queryParams.length} `;
+    queryString += `AND city LIKE $${queryParams.length} `;
   }
 
   // Min Price:
   if (options.minimum_price_per_night) {
-    const dollarsToCents = Math.floor(Number(options.minimum_price_per_night) * 100);
+    const dollarsToCents = Number(options.minimum_price_per_night) * 100;
 
     queryParams.push(`${dollarsToCents}`);
-    if (queryString.includes(`WHERE`)) {
-      // WHERE clause exists.
-      queryString += `AND cost_per_night >= $${queryParams.length} `
-    } else {
-      // No WHERE clause exists.
-      queryString += `WHERE cost_per_night >= $${queryParams.length} `
-    }
+    queryString += `AND cost_per_night >= $${queryParams.length} `
   }
 
   // Max Price:
   if (options.maximum_price_per_night) {
-    const dollarsToCents = Math.floor(Number(options.maximum_price_per_night) * 100);
+    const dollarsToCents = Number(options.maximum_price_per_night) * 100;
 
     queryParams.push(`${dollarsToCents}`);
-    if (queryString.includes(`WHERE`)) {
-      // WHERE clause exists.
-      queryString += `AND cost_per_night < $${queryParams.length} `
-    } else {
-      // No WHERE clause exists.
-      queryString += `WHERE cost_per_night < $${queryParams.length} `
-    }
+    queryString += `AND cost_per_night < $${queryParams.length} `
   }
 
   // Add GROUP BY:
-  queryString+= `GROUP BY properties.id `
+  queryString += `GROUP BY properties.id `
 
   // Min Rating:
   if (options.minimum_rating) {
@@ -209,7 +197,9 @@ const getAllProperties = function (options, limit = 10) {
   console.log(queryString, queryParams);
 
   // 6
-  return pool.query(queryString, queryParams).then((res) => res.rows);
+  return pool.query(queryString, queryParams)
+    .then(res => res.rows)
+    .catch(err => console.error(err));
 };
 
 /**
