@@ -120,7 +120,6 @@ const getAllReservations = function (guest_id, limit = 10) {
     ORDER BY reservations.start_date
     LIMIT $2;`, [guest_id, limit])
     .then(result => {
-      console.log(result.rows);
       return result.rows;
     })
 
@@ -136,22 +135,81 @@ const getAllReservations = function (guest_id, limit = 10) {
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function (options, limit = 10) {
+  // 1
+  console.log('Options = ', options);
+  const queryParams = [];
 
-  return pool.query(
-    `SELECT * FROM properties LIMIT $1;`, [limit])
-    .then(result => {
-      return result.rows;
-    })
-    .catch(err => {
-      console.error(err.message);
-      return;
-    })
+  // 2
+  let queryString = `
+  SELECT properties.*, avg(property_reviews.rating) as average_rating
+  FROM properties
+  JOIN property_reviews ON properties.id = property_id
+  `;
 
-  // const limitedProperties = {};
-  // for (let i = 1; i <= limit; i++) {
-  //   limitedProperties[i] = properties[i];
-  // }
-  // return Promise.resolve(limitedProperties);
+  // Owner ID:
+  if (options.owner_id) {
+    queryParams.push(`${options.owner_id}`)
+    queryString += `WHERE owner_id = $${queryParams.length} GROUP BY properties.id`
+    return pool.query(queryString, queryParams).then((res) => res.rows);
+  }
+
+  // City:
+  if (options.city) {
+    const searchCity = options.city.trim();
+    queryParams.push(`%${searchCity}%`);
+    queryString += `WHERE city LIKE $${queryParams.length} `;
+  }
+
+  // Min Price:
+  if (options.minimum_price_per_night) {
+    const dollarsToCents = Math.floor(Number(options.minimum_price_per_night) * 100);
+
+    queryParams.push(`${dollarsToCents}`);
+    if (queryString.includes(`WHERE`)) {
+      // WHERE clause exists.
+      queryString += `AND cost_per_night >= $${queryParams.length} `
+    } else {
+      // No WHERE clause exists.
+      queryString += `WHERE cost_per_night >= $${queryParams.length} `
+    }
+  }
+
+  // Max Price:
+  if (options.maximum_price_per_night) {
+    const dollarsToCents = Math.floor(Number(options.maximum_price_per_night) * 100);
+
+    queryParams.push(`${dollarsToCents}`);
+    if (queryString.includes(`WHERE`)) {
+      // WHERE clause exists.
+      queryString += `AND cost_per_night < $${queryParams.length} `
+    } else {
+      // No WHERE clause exists.
+      queryString += `WHERE cost_per_night < $${queryParams.length} `
+    }
+  }
+
+  // Add GROUP BY:
+  queryString+= `GROUP BY properties.id `
+
+  // Min Rating:
+  if (options.minimum_rating) {
+    queryParams.push(`${options.minimum_rating}`);
+    queryString += `HAVING avg(property_reviews.rating) >= $${queryParams.length} `
+  }
+
+
+  // Limit / ORDER BY:
+  queryParams.push(limit);
+  queryString += `
+  ORDER BY cost_per_night
+  LIMIT $${queryParams.length};
+  `;
+
+  // 5
+  console.log(queryString, queryParams);
+
+  // 6
+  return pool.query(queryString, queryParams).then((res) => res.rows);
 };
 
 /**
