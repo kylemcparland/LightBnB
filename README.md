@@ -43,7 +43,7 @@ _How the database is structured behind the scenes. There are some additional tab
 !["Screenshot of the database tables in PSQL"](https://raw.githubusercontent.com/kylemcparland/LightBnB/main/screenshots/lightbnb4.png "Screenshot of the database tables in PSQL")
 
 _Search the database..._
-!["Screenshot of the front-end of LightBnB - search"](https://raw.githubusercontent.com/kylemcparland/LightBnB/main/screenshots/lightbnb2.png "Screenshot of the front-end of LightBnB - search")
+!["Screenshot of the front-end of LightBnB - search"](https://raw.githubusercontent.com/kylemcparland/LightBnB/main/screenshots/lightbnb2n.png "Screenshot of the front-end of LightBnB - search")
 
 _...and you shall find._
 !["Screenshot of the front-end of LightBnB - property listings"](https://raw.githubusercontent.com/kylemcparland/LightBnB/main/screenshots/lightbnb3.png "Screenshot of the front-end of LightBnB - property listings")
