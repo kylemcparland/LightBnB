@@ -11,64 +11,66 @@ git clone git@github.com:kylemcparland/LightBnB.git
 cd lightbnb
 ```
 
-//... With your RDBMS of choice, initialize local database using migrations/01_schema.sql
-//... Import test/dummy data using seeds/02_seeds.sql
-//... Navigate to lightbnb_webapp
-
-- Install dependencies using `npm install` ( full list documented on bottom of README.md ):
+- Next, using your **RDBMS** of choice (postgreSQL in my case), initialize the local database using `migrations/01_schema.sql.` Populate the database using `seeds/02_seeds.sql.`
 
 ```bash
+\i migrations/01_schema.sql
+\i seeds/02_seeds.sql
+```
+
+- Finally, navigate to LightBnB_WebApp directory and install dependencies using `npm install` ( full list documented on bottom of README.md ):
+
+```bash
+cd LightBnB_WebApp
 npm install
 ```
 
-- Setup
-
 ## How to use
-- Initialize the development web server using `npm run local`. The app will be served at [port 8080](http://localhost:8080/) by default.
+- Initialize the development web server using `npm run local`. The app will be served at [port 3000](http://localhost:3000/) by default.
 ```bash
 npm run local
 ...
-"Tweeter listening on port 8080!"
+"listening on port 8080 😎"
 ```
-- Connect locally using the url http://localhost:8080/ in your browser! _(Or customize the host using the PORT variable stored in server/index.js)_
+- Connect locally using the url http://localhost:3000/ in your browser!
 
 ## Final Product
 
-!["Screenshot of terminal running Tweeter"](https://raw.githubusercontent.com/kylemcparland/tweeter/master/public/images/host-tweeter.png "Screenshot of terminal running Tweeter")
+ERD (screenshot example)
+
+!["Screenshot of terminal running Tweeter"]( "Screenshot of terminal running Tweeter")
 
 _Tweet whatever you like and Tweeter will generate a Username and Handle for you!_
-!["Animated gif of submitting a new Tweet"](https://raw.githubusercontent.com/kylemcparland/tweeter/master/public/images/submit-tweet.gif "Animated gif of submitting a new Tweet")
+!["Animated gif of submitting a new Tweet"]( "Animated gif of submitting a new Tweet")
 
 _Responsive design in action! Desktop ==> Mobile_
-!["Animated gif of the layout changing when resizing the window"](https://github.com/kylemcparland/tweeter/blob/master/public/images/responsive-design.gif?raw=true "Animated gif of the layout changing when resizing the window")
+!["Animated gif of the layout changing when resizing the window"]( "Animated gif of the layout changing when resizing the window")
 
 _Even the Tweets have responsive design!_
-!["Screenshot of two different sized Tweets"](https://raw.githubusercontent.com/kylemcparland/tweeter/master/public/images/tweet-designs.png "Screenshot of two different sized Tweets")
+!["Screenshot of two different sized Tweets"]( "Screenshot of two different sized Tweets")
 
 ## Dependencies + Acknowledgements
-This project would not be possible without the following amazing libraries:
+This project would not be possible without the following amazing libraries, and development tools:
 
-1. [Node.js](https://nodejs.org/en/download/package-manager) ^5.10.x
+[Node.js](https://nodejs.org/en/download/package-manager) ^5.10.x
 
-2. [express](https://www.npmjs.com/package/express) ^4.19.2
+[PostgreSQL](https://www.postgresql.org/) ^10.14
 
-3. [Sass](https://www.npmjs.com/package/sass) ^1.77.8
+[node-postgres](https://node-postgres.com/) ^8.12.0
 
-4. [body-parser](https://www.npmjs.com/package/body-parser) ^1.20.2
+[Express](https://expressjs.com/) ^4.17.1
 
-5. [md5](https://www.npmjs.com/package/md5) ^2.1.0
+[bcrypt](https://www.npmjs.com/package/bcrypt) ^3.0.6
 
-6. [chance](https://www.npmjs.com/package/chance) ^1.0.2
+[cookie-session](https://www.npmjs.com/package/cookie-session?activeTab=readme) ^1.3.3
 
-[jquery](https://jquery.com/), [timeago](https://www.npmjs.com/package/timeago): (External JS downloaded on connect)
+[Sass](https://www.npmjs.com/package/sass) ^1.77.8
 
+[nodemon](https://www.npmjs.com/package/nodemon) ^1.19.2
 
-### Furthermore, these amazing development tools:
-
-[nodemon](https://www.npmjs.com/package/nodemon) ^1.9.2
 
 ## Bugs and Issues:
-If you encounter any bugs, please feel free to open an issue at [github](https://github.com/kylemcparland/tweeter/issues).
+If you encounter any bugs, please feel free to open an issue at [github](https://github.com/kylemcparland/LightBnB/issues).
 
 ---
 
