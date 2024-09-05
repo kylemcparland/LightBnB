@@ -36,18 +36,17 @@ npm run local
 
 ## Final Product
 
-ERD (screenshot example)
+_ERD of the project's database - for learning purposes there is one instance of de-normalization._
+!["Screenshot of the database ERD"](https://raw.githubusercontent.com/kylemcparland/LightBnB/main/screenshots/lightbnb1.png "Screenshot of the database ERD")
 
-!["Screenshot of terminal running Tweeter"]( "Screenshot of terminal running Tweeter")
+_How the database is structured behind the scenes. There are some additional tables to allow the project's scope to grow!_
+!["Screenshot of the database tables in PSQL"](https://raw.githubusercontent.com/kylemcparland/LightBnB/main/screenshots/lightbnb4.png "Screenshot of the database tables in PSQL")
 
-_Tweet whatever you like and Tweeter will generate a Username and Handle for you!_
-!["Animated gif of submitting a new Tweet"]( "Animated gif of submitting a new Tweet")
+_Search the database..._
+!["Screenshot of the front-end of LightBnB - search"](https://raw.githubusercontent.com/kylemcparland/LightBnB/main/screenshots/lightbnb2.png "Screenshot of the front-end of LightBnB - search")
 
-_Responsive design in action! Desktop ==> Mobile_
-!["Animated gif of the layout changing when resizing the window"]( "Animated gif of the layout changing when resizing the window")
-
-_Even the Tweets have responsive design!_
-!["Screenshot of two different sized Tweets"]( "Screenshot of two different sized Tweets")
+_...and you shall find._
+!["Screenshot of the front-end of LightBnB - property listings"](https://raw.githubusercontent.com/kylemcparland/LightBnB/main/screenshots/lightbnb3.png "Screenshot of the front-end of LightBnB - property listings")
 
 ## Dependencies + Acknowledgements
 This project would not be possible without the following amazing libraries, and development tools:
