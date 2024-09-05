@@ -7,6 +7,42 @@ const pool = new Pool({
   database: "lightbnb"
 });
 
+// LOG QUERIES:
+const query = async(text, params) => {
+  const start = Date.now();
+  const res = await pool.query(text, params);
+  const duration = Date.now() - start;
+  console.log('executed query', {text, duration, rows: res.rowCount });
+
+  return res;
+};
+
+// LOG CLIENT:
+const getClient = async() => {
+  const client = await pool.connect();
+  const query = client.query;
+  const release = client.release;
+
+  const timeout = setTimeout(() => {
+    console.error('A client has been checked out for more than 5 seconds!');
+    console.error(`The last executed query on this client was: ${client.lastQuery}`);
+  }, 5000);
+
+  client.query = (...args) => {
+    client.lastQuery = args;
+    return query.apply(client, args);
+  };
+
+  client.release = () => {
+    clearTimeout(timeout);
+
+    client.query = query;
+    client.release = release;
+    return release.apply(client);
+  };
+  return client;
+};
+
 
 /// --- USERS --- ///
 
@@ -18,7 +54,7 @@ const pool = new Pool({
 const getUserWithEmail = function(email) {
   const lowerCaseEmail = email.toLowerCase();
 
-  return pool.query(`SELECT * FROM users WHERE email = $1;`, [lowerCaseEmail])
+  return query(`SELECT * FROM users WHERE email = $1;`, [lowerCaseEmail])
     .then(result => result.rows.length ? result.rows[0] : null)
     .catch(err => {
       console.error('Error fetching user by email: ', err.message);
@@ -32,7 +68,7 @@ const getUserWithEmail = function(email) {
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithId = function(id) {
-  return pool.query(`SELECT * FROM users WHERE id = $1;`, [id])
+  return query(`SELECT * FROM users WHERE id = $1;`, [id])
     .then(result => result.rows.length ? result.rows[0] : null)
     .catch(err => {
       console.error('Error fetching user by ID: ', err.message);
@@ -49,7 +85,7 @@ const addUser = function(user) {
   const { name, email, password } = user;
   const lowerCaseEmail = email.toLowerCase();
 
-  return pool.query(`
+  return query(`
     INSERT INTO users (name, email, password)
     VALUES ($1, $2, $3)
     RETURNING *;`,
@@ -70,7 +106,7 @@ const addUser = function(user) {
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function(guest_id, limit = 10) {
-  return pool.query(`
+  return query(`
     SELECT reservations.id, properties.title, properties.cost_per_night, properties.number_of_bedrooms, properties.number_of_bathrooms, 
       properties.parking_spaces, properties.thumbnail_photo_url, reservations.start_date, AVG(property_reviews.rating) AS average_rating
     FROM reservations
@@ -105,7 +141,7 @@ const getAllProperties = function(options, limit = 10) {
     SELECT properties.*, avg(property_reviews.rating) as average_rating
     FROM properties
     JOIN property_reviews ON properties.id = property_id
-    WHERE 1=1`;
+    WHERE 1=1 `;
 
   // Owner ID...
   if (options.owner_id) {
@@ -150,7 +186,7 @@ const getAllProperties = function(options, limit = 10) {
   queryString += `ORDER BY cost_per_night LIMIT $${queryParams.length};`;
 
   // Submit query:
-  return pool.query(queryString, queryParams)
+  return query(queryString, queryParams)
     .then(res => res.rows)
     .catch(err => {
       console.error('Error fetching properties: ', err.message);
@@ -181,7 +217,7 @@ const addProperty = function(property) {
     owner_id
   } = property;
 
-  return pool.query(`
+  return query(`
     INSERT INTO properties (title, description, number_of_bedrooms, number_of_bathrooms, 
       parking_spaces, cost_per_night, thumbnail_photo_url, cover_photo_url, 
       street, country, city, province, post_code, owner_id)
@@ -198,6 +234,8 @@ const addProperty = function(property) {
 };
 
 module.exports = {
+  query,
+  getClient,
   getUserWithEmail,
   getUserWithId,
   addUser,
