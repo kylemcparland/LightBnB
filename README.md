@@ -18,7 +18,7 @@ cd lightbnb
 \i seeds/02_seeds.sql
 ```
 
-- Finally, navigate to LightBnB_WebApp directory and install dependencies using `npm install` ( full list documented on bottom of README.md ):
+- Finally, navigate to the LightBnB_WebApp directory and install dependencies using `npm install` ( full list documented on bottom of README.md ):
 
 ```bash
 cd LightBnB_WebApp
